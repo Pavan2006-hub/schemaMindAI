@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchemaMindAI - Human-in-the-Loop Schema Review</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <a href="/" class="brand-link">
+                    <span class="brand-icon">⚡</span>
+                    <div>
+                        <h1>SchemaMindAI</h1>
+                        <p class="subtitle">Human-in-the-Loop Schema Reviewer</p>
+                    </div>
+                </a>
+            </div>
+            <a href="/" class="btn btn-secondary">Cancel & Back</a>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="card">
+            <h2>3. Review & Fine-Tune Detected Schema</h2>
+            <p class="section-desc">
+                The Vision & Schema Agents extracted the initial schema below. You can inspect, rename columns, modify data types, or adjust primary/foreign keys before generating UML and MySQL artifacts.
+            </p>
+
+            <form action="/approve_schema/{{ session_id }}" method="POST">
+                <div class="form-group">
+                    <label for="schema_json"><strong>Normalized Schema JSON Specification:</strong></label>
+                    <textarea id="schema_json" name="schema_json" rows="22" class="code-editor">{{ schema_json }}</textarea>
+                </div>
+
+                <div class="actions mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        ✅ Approve & Generate Full System (UML + MySQL + Python)
+                    </button>
+                    <a href="/" class="btn btn-secondary">Discard & Upload New</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>SchemaMindAI &bull; Human-in-the-Loop Architectural Engine</p>
+    </footer>
+</body>
+</html>

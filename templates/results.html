@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchemaMindAI - Results Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Mermaid CDN for client-side diagram rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+</head>
+<body class="results-page">
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <a href="/" class="brand-link">
+                    <span class="brand-icon">⚡</span>
+                    <div>
+                        <h1>SchemaMindAI</h1>
+                        <p class="subtitle">Multi-Agent AI Execution Dashboard</p>
+                    </div>
+                </a>
+            </div>
+            <div class="header-actions">
+                <a href="/download/bundle/{{ state.session_id }}" class="btn btn-primary">
+                    📦 Download Complete ZIP Bundle
+                </a>
+                <a href="/" class="btn btn-secondary">
+                    ➕ New Diagram
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container results-container">
+        <!-- Agent Pipeline Execution Banner -->
+        <section class="card timeline-banner">
+            <h2>Multi-Agent Pipeline Execution Log</h2>
+            <div class="timeline-stepper">
+                {% for event in state.timeline %}
+                <div class="step-card status-{{ event.status.value.lower() }}">
+                    <div class="step-header">
+                        <span class="step-agent">{{ event.agent_name }}</span>
+                        {% if event.duration_ms %}
+                        <span class="step-duration">{{ event.duration_ms }} ms</span>
+                        {% endif %}
+                    </div>
+                    <div class="step-name">{{ event.step_name }}</div>
+                    <div class="step-desc">{{ event.message }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Tabbed Results Container -->
+        <section class="card results-tab-card mt-4">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="openTab(event, 'tab-erd')">📊 ER Diagram (ERD)</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-uml')">🏛️ UML Class & Sequence</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-mysql')">🐬 MySQL 8.0 DDL</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-python')">🐍 Python SQLAlchemy & Pydantic</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-audit')">🛡️ Validation & Agent Audit</button>
+            </div>
+
+            <!-- Tab 1: ER Diagram -->
+            <div id="tab-erd" class="tab-content active">
+                <div class="tab-toolbar">
+                    <h3>Entity-Relationship Diagram (Mermaid.js)</h3>
+                    <div class="toolbar-actions">
+                        <button class="btn btn-sm btn-outline" onclick="copyCode('raw-erd')">📋 Copy ERD Code</button>
+                        <a href="/download/file/{{ state.session_id }}/erd_mermaid" class="btn btn-sm btn-outline">⬇️ Download .mmd</a>
+                    </div>
+                </div>
+                <div class="diagram-canvas">
+                    <pre class="mermaid">
+{{ state.generated_artifacts.erd_mermaid }}
+                    </pre>
+                </div>
+                <details class="code-details mt-4">
+                    <summary>View Raw Mermaid ERD Source</summary>
+                    <pre id="raw-erd" class="code-block"><code>{{ state.generated_artifacts.erd_mermaid }}</code></pre>
+                </details>
+            </div>
+
+            <!-- Tab 2: UML Class Diagram & Sequence Diagram -->
+            <div id="tab-uml" class="tab-content">
+                <div class="tab-toolbar">
+                    <h3>UML Class Diagram & Domain Methods</h3>
+                    <div class="toolbar-actions">
+                        <button class="btn btn-sm btn-outline" onclick="copyCode('raw-uml')">📋 Copy UML Code</button>
+                        <a href="/download/file/{{ state.session_id }}/uml_plantuml" class="btn btn-sm btn-outline">⬇️ Download PlantUML</a>
+                    </div>
+                </div>
+                <div class="diagram-canvas">
+                    <pre class="mermaid">
+{{ state.generated_artifacts.uml_mermaid }}
+                    </pre>
+                </div>
+
+                <h3 class="mt-4">Transactional CRUD Sequence Diagram</h3>
+                <div class="diagram-canvas">
+                    <pre class="mermaid">
+{{ state.generated_artifacts.uml_sequence }}
+                    </pre>
+                </div>
+
+                <details class="code-details mt-4">
+                    <summary>View PlantUML Source Code</summary>
+                    <pre id="raw-uml" class="code-block"><code>{{ state.generated_artifacts.uml_plantuml }}</code></pre>
+                </details>
+            </div>
+
+            <!-- Tab 3: MySQL 8.0 Script -->
+            <div id="tab-mysql" class="tab-content">
+                <div class="tab-toolbar">
+                    <h3>Production-Grade MySQL 8.0 DDL Script</h3>
+                    <div class="toolbar-actions">
+                        <button class="btn btn-sm btn-outline" onclick="copyCode('raw-mysql')">📋 Copy SQL</button>
+                        <a href="/download/file/{{ state.session_id }}/mysql_sql" class="btn btn-sm btn-outline">⬇️ Download .sql</a>
+                    </div>
+                </div>
+                <p class="tab-info">Includes UTF8MB4 charset, InnoDB engine, foreign keys with CASCADE, indexes, and realistic mock seed records.</p>
+                <pre id="raw-mysql" class="code-block"><code class="language-sql">{{ state.generated_artifacts.mysql_sql }}</code></pre>
+            </div>
+
+            <!-- Tab 4: Python Output -->
+            <div id="tab-python" class="tab-content">
+                <div class="tab-toolbar">
+                    <h3>SQLAlchemy 2.0 ORM Models</h3>
+                    <div class="toolbar-actions">
+                        <button class="btn btn-sm btn-outline" onclick="copyCode('raw-sa')">📋 Copy Models</button>
+                        <a href="/download/file/{{ state.session_id }}/sqlalchemy_code" class="btn btn-sm btn-outline">⬇️ Download models.py</a>
+                    </div>
+                </div>
+                <pre id="raw-sa" class="code-block"><code class="language-python">{{ state.generated_artifacts.sqlalchemy_code }}</code></pre>
+
+                <div class="tab-toolbar mt-4">
+                    <h3>Pydantic v2 Schemas</h3>
+                    <div class="toolbar-actions">
+                        <button class="btn btn-sm btn-outline" onclick="copyCode('raw-pydantic')">📋 Copy Pydantic</button>
+                        <a href="/download/file/{{ state.session_id }}/pydantic_code" class="btn btn-sm btn-outline">⬇️ Download schemas.py</a>
+                    </div>
+                </div>
+                <pre id="raw-pydantic" class="code-block"><code class="language-python">{{ state.generated_artifacts.pydantic_code }}</code></pre>
+
+                <div class="tab-toolbar mt-4">
+                    <h3>FastAPI CRUD Routes</h3>
+                    <div class="toolbar-actions">
+                        <button class="btn btn-sm btn-outline" onclick="copyCode('raw-fastapi')">📋 Copy FastAPI</button>
+                        <a href="/download/file/{{ state.session_id }}/fastapi_code" class="btn btn-sm btn-outline">⬇️ Download api.py</a>
+                    </div>
+                </div>
+                <pre id="raw-fastapi" class="code-block"><code class="language-python">{{ state.generated_artifacts.fastapi_code }}</code></pre>
+            </div>
+
+            <!-- Tab 5: Multi-Agent Audit -->
+            <div id="tab-audit" class="tab-content">
+                <div class="tab-toolbar">
+                    <h3>Validation & Consistency Audit Report</h3>
+                </div>
+                <div class="audit-summary-grid">
+                    <div class="audit-metric">
+                        <span class="metric-val">{{ state.database_schema.tables|length }}</span>
+                        <span class="metric-lbl">Tables Normalized</span>
+                    </div>
+                    <div class="audit-metric">
+                        <span class="metric-val">{{ state.database_schema.relationships|length }}</span>
+                        <span class="metric-lbl">Relationships Linked</span>
+                    </div>
+                    <div class="audit-metric">
+                        <span class="metric-val">{{ state.refinement_iterations }}</span>
+                        <span class="metric-lbl">Refinement Passes</span>
+                    </div>
+                    <div class="audit-metric">
+                        <span class="metric-val status-badge-{{ 'success' if state.validation_result.is_valid else 'warning' }}">
+                            {{ 'PASSED' if state.validation_result.is_valid else 'WARNINGS' }}
+                        </span>
+                        <span class="metric-lbl">Validation Status</span>
+                    </div>
+                </div>
+
+                <h4 class="mt-4">Validation Findings & Heuristic Enhancements</h4>
+                {% if state.validation_result.issues %}
+                    <div class="issue-list">
+                        {% for issue in state.validation_result.issues %}
+                        <div class="issue-item issue-{{ issue.severity }}">
+                            <div class="issue-badge">{{ issue.severity|upper }}</div>
+                            <div class="issue-body">
+                                <strong>{{ issue.table or 'Schema' }}:</strong> {{ issue.message }}
+                                {% if issue.suggestion %}
+                                <div class="issue-suggestion">💡 Suggestion: {{ issue.suggestion }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="success-box mt-2">
+                        🎉 Schema strictly complies with 3NF normalization, valid primary keys, foreign key constraints, and MySQL keyword safety!
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>SchemaMindAI &bull; Hackathon Multi-Agent AI System</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

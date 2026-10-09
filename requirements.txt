@@ -1,0 +1,23 @@
+# SchemaMindAI - ER Diagram to Multi-Agent AI UML and MySQL Generator
+# Dependencies for PyCharm / Python 3.10+
+
+# Web Framework & Core
+flask>=3.0.0
+jinja2>=3.1.2
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# HTTP & Local LLM Integration
+requests>=2.31.0
+urllib3>=2.0.7
+openai>=1.12.0
+
+# Image Processing & Diagramming
+pillow>=10.2.0
+
+# Environment & Utilities
+python-dotenv>=1.0.1
+colorama>=0.4.6
+
+# Testing
+pytest>=8.0.0

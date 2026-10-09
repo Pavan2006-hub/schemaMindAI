@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchemaMindAI - ER Diagram to Multi-Agent AI UML & MySQL Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-icon">⚡</div>
+                <div>
+                    <h1>SchemaMindAI</h1>
+                    <p class="subtitle">Multi-Agent AI Engine • ER Diagram to UML, MySQL & Python Generator</p>
+                </div>
+            </div>
+            <div class="badge-status">
+                <span class="status-dot"></span>
+                <span>Powered by Local Gemma & Multi-Agent Architecture</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="flash-badge {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="grid-layout">
+            <!-- Left Panel: Upload and Parameters -->
+            <section class="card upload-card">
+                <h2>1. Upload ER Diagram</h2>
+                <p class="section-desc">Upload any database Entity-Relationship diagram (hand-drawn, whiteboard photo, Lucidchart, or schema export).</p>
+
+                <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+                    <div class="drop-zone" id="dropZone">
+                        <input type="file" name="diagram_file" id="fileInput" accept=".png,.jpg,.jpeg,.webp,.bmp" required>
+                        <div class="drop-content">
+                            <div class="drop-icon">📁</div>
+                            <p class="drop-text">Drag & drop your ER Diagram image here</p>
+                            <span class="btn-browse">Browse Image</span>
+                            <p class="file-note">Supports PNG, JPG, JPEG, WEBP (Up to 16MB)</p>
+                            <div id="filePreviewName" class="file-preview-name"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label for="domain_hint">Domain / Context Hint (Optional):</label>
+                        <input type="text" id="domain_hint" name="domain_hint" class="input-field" placeholder="e.g., E-Commerce Store, Healthcare EHR, Banking System">
+                    </div>
+
+                    <div class="agent-pipeline-box mt-4">
+                        <h3>Multi-Agent Workflow</h3>
+                        <div class="agent-pills">
+                            <span class="agent-pill">👁️ Vision Agent</span>
+                            <span class="agent-arrow">→</span>
+                            <span class="agent-pill">📐 Schema Agent</span>
+                            <span class="agent-arrow">→</span>
+                            <span class="agent-pill">🛡️ Validation Agent</span>
+                            <span class="agent-arrow">→</span>
+                            <span class="agent-pill">🏛️ UML Agent</span>
+                            <span class="agent-arrow">→</span>
+                            <span class="agent-pill">⚡ Generators</span>
+                        </div>
+                    </div>
+
+                    <div class="actions mt-4">
+                        <button type="submit" name="action" value="full_pipeline" class="btn btn-primary btn-lg">
+                            🚀 Generate Full System (UML + MySQL + Python)
+                        </button>
+                        <button type="submit" name="action" value="review_first" class="btn btn-secondary">
+                            🔍 Review Schema First (Human-in-the-Loop)
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Right Panel: Model & Quick Demos -->
+            <section class="card config-card">
+                <h2>2. Gemma Engine Settings</h2>
+                <p class="section-desc">Local Gemma configuration and instant one-click test templates.</p>
+
+                <div class="config-summary">
+                    <div class="config-row">
+                        <span>Current Provider:</span>
+                        <strong class="highlight-text">{{ config.LLM_PROVIDER.upper() }}</strong>
+                    </div>
+                    <div class="config-row">
+                        <span>Local Gemma Model:</span>
+                        <code>{{ config.GEMMA_MODEL }}</code>
+                    </div>
+                    <div class="config-row">
+                        <span>Ollama Base URL:</span>
+                        <code>{{ config.OLLAMA_BASE_URL }}</code>
+                    </div>
+                </div>
+
+                <div class="quick-samples mt-4">
+                    <h3>⚡ Instant Hackathon Demo Presets</h3>
+                    <p class="small-text">No diagram file on hand? Click a sample preset to test the multi-agent pipeline immediately:</p>
+
+                    <div class="preset-list">
+                        <a href="/sample/ecommerce" class="preset-item">
+                            <div class="preset-title">🛒 E-Commerce & Inventory</div>
+                            <div class="preset-meta">5 Entities • Orders, Products, Categories, Users, Items</div>
+                        </a>
+                        <a href="/sample/healthcare" class="preset-item">
+                            <div class="preset-title">🏥 Hospital & Appointments</div>
+                            <div class="preset-meta">4 Entities • Patients, Doctors, Appointments, MedicalRecords</div>
+                        </a>
+                        <a href="/sample/social" class="preset-item">
+                            <div class="preset-title">📱 Social Network Platform</div>
+                            <div class="preset-meta">5 Entities • Users, Posts, Comments, Likes, Followers</div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="features-box mt-4">
+                    <h3>Key Deliverables Generated</h3>
+                    <ul class="feature-checklist">
+                        <li>✅ Interactive Mermaid & Graphviz ER Diagrams</li>
+                        <li>✅ UML Class Diagrams, Stereotypes & Methods</li>
+                        <li>✅ Interactive Domain Sequence Diagrams</li>
+                        <li>✅ Production-Ready MySQL 8.0 DDL (InnoDB, FK, Indexes)</li>
+                        <li>✅ Modern SQLAlchemy 2.0 ORM Python Models</li>
+                        <li>✅ Pydantic v2 Base, Create & Response Schemas</li>
+                        <li>✅ FastAPI REST CRUD Skeleton Router</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <p>SchemaMindAI &bull; Built with Google Gemma, Multi-Agent Architecture, Flask & Mermaid.js</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
